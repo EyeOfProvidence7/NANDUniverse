@@ -1,17 +1,17 @@
-class NandGate:
-    def __init__(self):
-        self.call_count = 0
+nand_count = 0
 
+class NandGate:
     def compute(self, a: int, b: int) -> int:
-        self.call_count += 1
+        global nand_count
+        nand_count += 1
         return 1 - (a & b)
 
 
 class Component:
-    def __init__(self, num_inputs: int, num_outputs: int, nand_gate: NandGate):
+    def __init__(self, num_inputs: int, num_outputs: int):
         self.num_inputs = num_inputs
         self.num_outputs = num_outputs
-        self.nand_gate = nand_gate
+        self.nand_gate = NandGate()
 
     def compute(self, inputs: list[int]) -> list[int]:
         if len(inputs) != self.num_inputs:
@@ -28,7 +28,7 @@ class Component:
         
 class Not(Component):
     def __init__(self):
-        super().__init__(num_inputs=1, num_outputs=1, nand_gate=NandGate())
+        super().__init__(num_inputs=1, num_outputs=1)
 
     def _compute(self, inputs: list[int]) -> list[int]:
         return [self.nand_gate.compute(inputs[0], inputs[0])]
@@ -36,7 +36,7 @@ class Not(Component):
 
 class And(Component):
     def __init__(self):
-        super().__init__(num_inputs=2, num_outputs=1, nand_gate=NandGate())
+        super().__init__(num_inputs=2, num_outputs=1)
         self.not_gate = Not()
 
     def _compute(self, inputs: list[int]) -> list[int]:
@@ -47,7 +47,7 @@ class And(Component):
 
 class Or(Component):
     def __init__(self):
-        super().__init__(num_inputs=2, num_outputs=1, nand_gate=NandGate())
+        super().__init__(num_inputs=2, num_outputs=1)
         self.not_gate = Not()
 
     def _compute(self, inputs: list[int]) -> list[int]:
