@@ -73,4 +73,54 @@ class Xor(Component):
         return [self.and_gate.compute([or_out, not_and_out])[0]]
     
 
+class HalfAdder(Component):
+    def __init__(self):
+        super().__init__(num_inputs=2, num_outputs=2)  
+        self.xor_gate = Xor()
+        self.and_gate = And()
+
+    def _compute(self, inputs: list[int]) -> list[int]:
+        a, b = inputs
+        sum_out = self.xor_gate.compute([a, b])[0]
+        carry_out = self.and_gate.compute([a, b])[0] 
+        return [sum_out, carry_out] 
+    
+
+class FullAdder(Component):
+    def __init__(self):
+        super().__init__(num_inputs=3, num_outputs=2)
+        self.half_adder1 = HalfAdder()
+        self.half_adder2 = HalfAdder()
+        self.or_gate = Or()
+
+    def _compute(self, inputs: list[int]) -> list[int]:
+        a, b, carry_in = inputs
+        half1_sum, half1_carry = self.half_adder1.compute([a, b])
+        half2_sum, half2_carry = self.half_adder2.compute([half1_sum, carry_in])
+        carry_out = self.or_gate.compute([half1_carry, half2_carry])[0]
+
+        return [half2_sum, carry_out]
+    
+
+class EightBitRippleCarryAdder(Component):
+    def __init__(self):
+        # 8 bits of A + 8 bits of B = 16 inputs; 8-bit sum + carry out = 9 outputs
+        super().__init__(num_inputs=16, num_outputs=9)
+        self.full_adder = FullAdder()
+
+    def _compute(self, inputs: list[int]) -> list[int]:
+        a = list(reversed(inputs[:8]))
+        b = list(reversed(inputs[8:]))
+
+        carry_in = 0
+        sum_bits = []
+
+        for i in range(8):
+            sum_i, carry_out_i = self.full_adder.compute([a[i], b[i], carry_in])
+            sum_bits.append(sum_i)
+            carry_in = carry_out_i
+
+        return list(reversed(sum_bits + [carry_in]))
+
+
 #-------------------------------------------------------------------------------------------------#

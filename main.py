@@ -34,7 +34,10 @@ def main():
         "not": nc.Not(),
         "and": nc.And(),
         "or": nc.Or(),
-        "xor": nc.Xor()
+        "xor": nc.Xor(),
+        "halfadder": nc.HalfAdder(),
+        "fulladder": nc.FullAdder(),
+        "8bitadder": nc.EightBitRippleCarryAdder(),
     }
 
     console.print("\n[bold magenta]Welcome to the NAND-based Component Simulator![/bold magenta]")
