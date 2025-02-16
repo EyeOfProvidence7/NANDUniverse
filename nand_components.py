@@ -1,9 +1,5 @@
-nand_count = 0
-
 class NandGate:
     def compute(self, a: int, b: int) -> int:
-        global nand_count
-        nand_count += 1
         return 1 - (a & b)
 
 
@@ -11,7 +7,6 @@ class Component:
     def __init__(self, num_inputs: int, num_outputs: int):
         self.num_inputs = num_inputs
         self.num_outputs = num_outputs
-        self.nand_gate = NandGate()
 
     def compute(self, inputs: list[int]) -> list[int]:
         if len(inputs) != self.num_inputs:
@@ -24,38 +19,54 @@ class Component:
         
         return outputs
 
+    def countNandGates(self) -> int:
+        raise ValueError("Not implemented!")
+
+
 #-------------------------------------------------------------------------------------------------#
         
 class Not(Component):
     def __init__(self):
         super().__init__(num_inputs=1, num_outputs=1)
+        self.nand_gate = NandGate()
 
     def _compute(self, inputs: list[int]) -> list[int]:
         a = inputs[0]
         return [self.nand_gate.compute(a, a)]
+    
+    def countNandGates(self) -> int:
+        return 1
 
 
 class And(Component):
     def __init__(self):
         super().__init__(num_inputs=2, num_outputs=1)
         self.not_gate = Not()
+        self.nand_gate = NandGate()
 
     def _compute(self, inputs: list[int]) -> list[int]:
         a, b = inputs
         nand_out = self.nand_gate.compute(a, b)
         return [self.not_gate.compute([nand_out])[0]]
+    
+    def countNandGates(self):
+        return self.not_gate.countNandGates() + 1
 
 
 class Or(Component):
     def __init__(self):
         super().__init__(num_inputs=2, num_outputs=1)
         self.not_gate = Not()
+        self.nand_gate = NandGate()
 
     def _compute(self, inputs: list[int]) -> list[int]:
         a, b = inputs
         not_a = self.not_gate.compute([a])[0]
         not_b = self.not_gate.compute([b])[0]
         return [self.nand_gate.compute(not_a, not_b)]
+    
+    def countNandGates(self):
+        return self.not_gate.countNandGates() + 1
     
 
 class Xor(Component):
@@ -72,6 +83,9 @@ class Xor(Component):
         not_and_out = self.not_gate.compute([and_out])[0]
         return [self.and_gate.compute([or_out, not_and_out])[0]]
     
+    def countNandGates(self):
+        return self.and_gate.countNandGates() + self.or_gate.countNandGates() + self.not_gate.countNandGates()
+    
 
 class HalfAdder(Component):
     def __init__(self):
@@ -84,6 +98,9 @@ class HalfAdder(Component):
         sum_out = self.xor_gate.compute([a, b])[0]
         carry_out = self.and_gate.compute([a, b])[0] 
         return [sum_out, carry_out] 
+    
+    def countNandGates(self):
+        return self.xor_gate.countNandGates() + self.and_gate.countNandGates()
     
 
 class FullAdder(Component):
@@ -100,6 +117,9 @@ class FullAdder(Component):
         carry_out = self.or_gate.compute([half1_carry, half2_carry])[0]
 
         return [half2_sum, carry_out]
+    
+    def countNandGates(self):
+        return self.half_adder1.countNandGates() * 2 + self.or_gate.countNandGates()
     
 
 class EightBitRippleCarryAdder(Component):
@@ -121,6 +141,40 @@ class EightBitRippleCarryAdder(Component):
             carry_in = carry_out_i
 
         return list(reversed(sum_bits + [carry_in]))
+    
+    def countNandGates(self):
+        return self.full_adder.countNandGates()
+
+
+class DLatch(Component):
+    # A simple 1-bit storage made up of 4 NAND gates and a NOT gate.
+    # Takes a "data" bit, followed by an "enable" bit. When "enable" is set to
+    # 1, then the "data" bit is saved as the current state.
+    # Output for this component is [state, NOT state].
+    # https://www.build-electronic-circuits.com/d-latch/
+    def __init__(self, initial_state: int = 0):
+        super().__init__(num_inputs=2, num_outputs=2)
+        self.state = initial_state
+        self.nand_gates = [NandGate() for _ in range(4)]
+        self.not_gate = Not()
+    
+    def _compute(self, inputs: list[int]) -> list[int]:
+        # First input is data, second is "enable", or clock switch.
+        d = inputs[0]
+        e = inputs[1]
+        g1 = self.nand_gates[0].compute(d, e)
+        n = self.not_gate.compute([d])[0]
+        g2 = self.nand_gates[1].compute(e, n)
+
+        g3 = self.nand_gates[2].compute(g1, 0 if self.state else 1)
+        g4 = self.nand_gates[3].compute(g3, g2)
+        g3 = self.nand_gates[2].compute(g1, g4) # Compute 3rd NAND gate again after signal propagation.
+        self.state = g3
+
+        return [self.state, g4]
+    
+    def countNandGates(self):
+        return len(self.nand_gates) + self.not_gate.countNandGates()
 
 
 #-------------------------------------------------------------------------------------------------#
