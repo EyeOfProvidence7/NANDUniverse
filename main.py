@@ -7,7 +7,7 @@ def generate_combinations(n: int) -> list[list[int]]:
 
 n = 2
 combinations = generate_combinations(n)
-component = Or()
+component = And()
 for combo in combinations:
     print(f"{combo} = {component.compute(combo)} {nand_components.nand_count}")
     nand_components.nand_count = 0

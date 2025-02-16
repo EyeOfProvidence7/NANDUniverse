@@ -31,7 +31,8 @@ class Not(Component):
         super().__init__(num_inputs=1, num_outputs=1)
 
     def _compute(self, inputs: list[int]) -> list[int]:
-        return [self.nand_gate.compute(inputs[0], inputs[0])]
+        a = inputs[0]
+        return [self.nand_gate.compute(a, a)]
 
 
 class And(Component):
