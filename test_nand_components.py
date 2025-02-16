@@ -104,5 +104,22 @@ class TestEightBitRippleCarryAdder(unittest.TestCase):
         self.assertEqual(self.eight_bit_adder.compute([1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1]), [1, 0, 0, 0, 0, 0, 0, 0, 0])
 
 
+class TestDLatch(unittest.TestCase):
+    def test_compute(self):
+        latch = nc.DLatch(initial_state=0)
+        # Test initial output state.
+        self.assertEqual(latch.compute([0, 0]), [0, 1])
+        # Test flipping data bit while enable is 0 (no change expected).
+        self.assertEqual(latch.compute([1, 0]), [0, 1])
+        self.assertEqual(latch.compute([0, 0]), [0, 1])
+        # Test flipping data bit while enable is set (state change expected).
+        self.assertEqual(latch.compute([1, 1]), [1, 0])
+        self.assertEqual(latch.compute([1, 0]), [1, 0])
+        self.assertEqual(latch.compute([0, 0]), [1, 0])
+        # Test resetting data bit back to 0.
+        self.assertEqual(latch.compute([0, 1]), [0, 1])
+        self.assertEqual(latch.compute([1, 0]), [0, 1])
+
+
 if __name__ == "__main__":
     unittest.main()

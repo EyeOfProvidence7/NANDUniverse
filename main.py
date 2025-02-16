@@ -30,7 +30,7 @@ def print_help(component_name: str = None):
     console.print(Panel(help_message, expand=False))
 
 def main():
-    components = {
+    components: dict[str, nc.Component] = {
         "not": nc.Not(),
         "and": nc.And(),
         "or": nc.Or(),
@@ -38,6 +38,7 @@ def main():
         "halfadder": nc.HalfAdder(),
         "fulladder": nc.FullAdder(),
         "8bitadder": nc.EightBitRippleCarryAdder(),
+        "dlatch": nc.DLatch(),
     }
 
     console.print("\n[bold magenta]Welcome to the NAND-based Component Simulator![/bold magenta]")
@@ -81,7 +82,7 @@ def main():
                 output_str = "".join(map(str, output))
 
                 console.print(f"[bold green]Output: {output_str}[/bold green]")
-                console.print(f"[bold cyan]NANDs used: {nc.nand_count}[/bold cyan]\n")
+                console.print(f"[bold cyan]NANDs used: {component.countNandGates()}[/bold cyan]\n")
 
                 nc.nand_count = 0
 
