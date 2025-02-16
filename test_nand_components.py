@@ -11,16 +11,13 @@ class TestNandGate(unittest.TestCase):
 
 class TestNot(unittest.TestCase):
     def test_compute(self):
-        nand_gate = NandGate()
-        not_gate = Not(nand_gate)
+        not_gate = Not()
         self.assertEqual(not_gate.compute([0]), [1])
         self.assertEqual(not_gate.compute([1]), [0])
 
 class TestAnd(unittest.TestCase):
     def test_compute(self):
-        nand_gate = NandGate()
-        not_gate = Not(nand_gate)
-        and_gate = And(nand_gate, not_gate)
+        and_gate = And()
         self.assertEqual(and_gate.compute([0, 0]), [0])
         self.assertEqual(and_gate.compute([0, 1]), [0])
         self.assertEqual(and_gate.compute([1, 0]), [0])
@@ -28,9 +25,7 @@ class TestAnd(unittest.TestCase):
 
 class TestOr(unittest.TestCase):
     def test_compute(self):
-        nand_gate = NandGate()
-        not_gate = Not(nand_gate)
-        or_gate = Or(nand_gate, not_gate)
+        or_gate = Or()
         self.assertEqual(or_gate.compute([0, 0]), [0])
         self.assertEqual(or_gate.compute([0, 1]), [1])
         self.assertEqual(or_gate.compute([1, 0]), [1])

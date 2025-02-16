@@ -27,17 +27,17 @@ class Component:
 #-------------------------------------------------------------------------------------------------#
         
 class Not(Component):
-    def __init__(self, nand_gate: NandGate):
-        super().__init__(num_inputs=1, num_outputs=1, nand_gate=nand_gate)
+    def __init__(self):
+        super().__init__(num_inputs=1, num_outputs=1, nand_gate=NandGate())
 
     def _compute(self, inputs: list[int]) -> list[int]:
         return [self.nand_gate.compute(inputs[0], inputs[0])]
 
 
 class And(Component):
-    def __init__(self, nand_gate: NandGate, not_gate: Not):
-        super().__init__(num_inputs=2, num_outputs=1, nand_gate=nand_gate)
-        self.not_gate = not_gate
+    def __init__(self):
+        super().__init__(num_inputs=2, num_outputs=1, nand_gate=NandGate())
+        self.not_gate = Not()
 
     def _compute(self, inputs: list[int]) -> list[int]:
         a, b = inputs
@@ -46,9 +46,9 @@ class And(Component):
 
 
 class Or(Component):
-    def __init__(self, nand_gate: NandGate, not_gate: Not):
-        super().__init__(num_inputs=2, num_outputs=1, nand_gate=nand_gate)
-        self.not_gate = not_gate
+    def __init__(self):
+        super().__init__(num_inputs=2, num_outputs=1, nand_gate=NandGate())
+        self.not_gate = Not()
 
     def _compute(self, inputs: list[int]) -> list[int]:
         a, b = inputs
