@@ -1,9 +1,7 @@
 from helpers import generate_combinations
 import nand_components as nc
 from prompt_toolkit import PromptSession
-from prompt_toolkit.shortcuts import clear
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
 
 console = Console()
@@ -39,11 +37,12 @@ def main():
     }
 
     console.print("[bold magenta]Welcome to the NAND-based Component Simulator![/bold magenta]")
-    console.print(f"[cyan]Available components:[/cyan] {', '.join(components.keys())}")
+    console.print(f"[cyan]Available components:[/cyan] {', '.join(components.keys())}\n")
 
     while True:
         try:
-            component_name = session.prompt("\n[bold cyan]Enter the component (or 'exit' to quit): [/bold cyan]").strip().lower()
+            component_name = session.prompt("> ").strip().lower()
+
             if component_name == "exit":
                 console.print("[bold green]Goodbye![/bold green]")
                 break
@@ -53,10 +52,9 @@ def main():
                 continue
 
             component = components[component_name]
-            console.print(f"\n[bold magenta]You selected the '{component_name}' component. Type 'back' to choose another component.[/bold magenta]\n")
 
             while True:
-                input_str = session.prompt(f"[cyan]{component_name} > [/cyan]").strip()
+                input_str = session.prompt(f"{component_name} > ").strip()
 
                 if input_str.lower() == "back":
                     console.print("\n[bold yellow]Returning to component selection...[/bold yellow]")
@@ -78,13 +76,10 @@ def main():
                 output = component.compute(inputs)
                 output_str = "".join(map(str, output))
 
-                table = Table(show_header=True, header_style="bold magenta")
-                table.add_column("Input", justify="center")
-                table.add_column("Output", justify="center")
-                table.add_row(input_str, output_str)
+                console.print(f"[bold green]Output: {output_str}[/bold green]")
+                console.print(f"[bold cyan]NAND gates used: {nc.nand_count}[/bold cyan]\n")
 
-                console.print(table)
-                console.print(f"[bold cyan]NAND gates used: {nc.nand_count}[/bold cyan]")
+                nc.nand_count = 0
 
         except KeyboardInterrupt:
             console.print("\n[bold red]Exiting...[/bold red]")
