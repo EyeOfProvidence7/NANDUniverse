@@ -33,10 +33,11 @@ def main():
     components = {
         "not": nc.Not(),
         "and": nc.And(),
-        "or": nc.Or()
+        "or": nc.Or(),
+        "xor": nc.Xor()
     }
 
-    console.print("[bold magenta]Welcome to the NAND-based Component Simulator![/bold magenta]")
+    console.print("\n[bold magenta]Welcome to the NAND-based Component Simulator![/bold magenta]")
     console.print(f"[cyan]Available components:[/cyan] {', '.join(components.keys())}\n")
 
     while True:
@@ -77,7 +78,7 @@ def main():
                 output_str = "".join(map(str, output))
 
                 console.print(f"[bold green]Output: {output_str}[/bold green]")
-                console.print(f"[bold cyan]NAND gates used: {nc.nand_count}[/bold cyan]\n")
+                console.print(f"[bold cyan]NANDs used: {nc.nand_count}[/bold cyan]\n")
 
                 nc.nand_count = 0
 

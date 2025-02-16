@@ -58,4 +58,19 @@ class Or(Component):
         return [self.nand_gate.compute(not_a, not_b)]
     
 
+class Xor(Component):
+    def __init__(self):
+        super().__init__(num_inputs=2, num_outputs=1)
+        self.and_gate = And()
+        self.or_gate = Or()
+        self.not_gate = Not()
+
+    def _compute(self, inputs: list[int]) -> list[int]:
+        a, b = inputs
+        or_out = self.or_gate.compute([a, b])[0]
+        and_out = self.and_gate.compute([a, b])[0]
+        not_and_out = self.not_gate.compute([and_out])[0]
+        return [self.and_gate.compute([or_out, not_and_out])[0]]
+    
+
 #-------------------------------------------------------------------------------------------------#
